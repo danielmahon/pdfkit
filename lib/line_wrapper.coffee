@@ -1,5 +1,5 @@
 # This regular expression is used for splitting a string into wrappable words
-WORD_RE = /([^ ,\/!.?:;\-\n]+[ ,\/!.?:;\-]*)|\n/g
+WORD_RE = /([^ ,\/!.?:;\-\n]+[ ,\/!.?:;\-]*)|\n|\s{2,}/g
 {EventEmitter} = require 'events'
 
 class LineWrapper extends EventEmitter
@@ -65,8 +65,8 @@ class LineWrapper extends EventEmitter
                 w = wordWidths[word] ?= width(word, options) + charSpacing + wordSpacing
 
                 if w > spaceLeft
-                    options.textWidth = width(buffer.trim(), options) + wordSpacing * (wc - 1)
-                    @emit 'line', buffer.trim(), options, this
+                    options.textWidth = width(buffer, options) + wordSpacing * (wc - 1)
+                    @emit 'line', buffer, options, this
                                         
                     # if we've reached the edge of the page, 
                     # continue on a new page or column
@@ -87,8 +87,8 @@ class LineWrapper extends EventEmitter
             # add the last line
             @lastLine = true
             @emit 'lastLine', options, this
-            options.textWidth = width(buffer.trim(), options) + wordSpacing * (wc - 1)
-            @emit 'line', buffer.trim(), options, this
+            options.textWidth = width(buffer, options) + wordSpacing * (wc - 1)
+            @emit 'line', buffer, options, this
             
             # make sure that the first line of a paragraph is never by 
             # itself at the bottom of a page (orphans)
